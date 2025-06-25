@@ -38,8 +38,15 @@ async def fetch_market_data():
 
     # Get market data feed authorization
     response = get_market_data_feed_authorize_v3()
+
+    # Extract authorized WebSocket URI and fail fast if missing
+    authorized_uri = response.get("data", {}).get("authorized_redirect_uri")
+    if not authorized_uri:
+        print(f"Failed to authorize feed: {response}")
+        return
+
     # Connect to the WebSocket with SSL context
-    async with websockets.connect(response["data"]["authorized_redirect_uri"], ssl=ssl_context) as websocket:
+    async with websockets.connect(authorized_uri, ssl=ssl_context) as websocket:
         print('Connection established')
 
         await asyncio.sleep(1)  # Wait for 1 second
@@ -70,6 +77,8 @@ async def fetch_market_data():
             # print("ohlc value", decoded_data.feeds["NSE_INDEX|Nifty 50"].fullFeed.indexFF.marketOHLC.ohlc[1])
             # print('marketOHLC.ohlc[]:', decoded_data.marketOHLC.ohlc)
             data = MessageToDict(decoded_data)
+            # Fetch last 1 minute historical candle for Nifty 50
+            last_minute_data = get_last_minute_candle("NSE_INDEX|Nifty 50")
             print(n,end='\n\n')
             print('Data as dictionary:', data, end='\n\n\n')
             n += 1
