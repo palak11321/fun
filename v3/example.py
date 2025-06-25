@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 import os
+import requests
 
 def fhg():
     print("This is a placeholder function for the example module.")
@@ -38,7 +39,7 @@ class MarketData:
     
 
 def previous_candle_data_return():
-     url = 'https://api.upstox.com/v3/historical-candle/intraday/NSE_EQ%7CINE848E01016/minutes/1'
+    url = 'https://api.upstox.com/v3/historical-candle/intraday/NSE_EQ%7CINE848E01016/minutes/1'
     headers = {
         'Accept': 'application/json'
     }
@@ -51,7 +52,8 @@ def previous_candle_data_return():
         print(response.json())
     else:
         # Print an error message if the request was not successful
-    print(f"Error: {response.status_code} - {response.text}")
+        print(f"Error: {response.status_code} - {response.text}")
+
 
 def candle_data_return(data):
         # This function would return the candle data
@@ -85,4 +87,19 @@ def run_divergence_system():
 
     log_system_status("ONLINE")
     logging.info("Divergence system started.")
+
+
+def get_last_minute_candle(instrument_key: str):
+    """Return last 1-minute candle data for the instrument."""
+    url = (
+        f"https://api.upstox.com/v3/historical-candle/intraday/{instrument_key}/minutes/1"
+    )
+    headers = {
+        "Accept": "application/json",
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    print(f"Error: {response.status_code} - {response.text}")
+    return None
 

@@ -70,6 +70,8 @@ async def fetch_market_data():
             # print("ohlc value", decoded_data.feeds["NSE_INDEX|Nifty 50"].fullFeed.indexFF.marketOHLC.ohlc[1])
             # print('marketOHLC.ohlc[]:', decoded_data.marketOHLC.ohlc)
             data = MessageToDict(decoded_data)
+            # Fetch last 1 minute historical candle for Nifty 50
+            last_minute_data = get_last_minute_candle("NSE_INDEX|Nifty 50")
             print(n,end='\n\n')
             print('Data as dictionary:', data, end='\n\n\n')
             n += 1
